@@ -1,0 +1,25 @@
+.w3-button.a-font{
+    font-size: 18px;
+    font-family: 'Open Sans', sans-serif;
+    line-height: 28px;
+    font-weight: bold;
+    color: #2E2E2E;}
+.w3-input.input{
+    float: right;
+    border-radius: 20px;
+    width: 25%;}
+#temp-message {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  border-radius: 5px;
+  padding: 25px;
+  background-color: rgb(25, 233, 14);
+  color: rgb(0, 0, 0);
+  font-size: 16px;
+  display: none;
+  z-index: 9999;
+}
+#id02{
+  padding-top:10vh;
+}

@@ -1,0 +1,109 @@
+html(lang="uk")
+head 
+    title Журнал відпусток
+    link(rel='icon', type='image/x-icon', href='checkbox_icon_151467.ico')
+    meta(charset="utf-8")
+    link(rel="stylesheet", href="w3.css")
+    link(rel="stylesheet", href="style.css")
+    script(src="jquery.js")
+    style.
+body 
+    div.w3-bar.w3-amber.w3-large
+        button.w3-bar-item.w3-button.w3-hover-red.w3-padding-24.a-font Новий рік
+        button.w3-bar-item.w3-button.w3-hover-blue.w3-padding-24.a-font(onclick="document.getElementById('id01').style.display='block'") Новий користувач
+        button.w3-bar-item.w3-button.w3-hover-green.w3-padding-24.a-font(onclick="document.getElementById('id02').style.display='block'") Додати відпустку
+        include modals.pug
+        div#temp-message
+        form(action="/search" method="GET")
+            input.w3-bar-item.w3-input.w3-margin.input(type="text" name="query" placeholder="Введіть П.І.Б." oninput="handleSearchInput(this)")
+            //- button.w3-right(type="submit") Search
+
+        //- div#search-results(style="display: none;")
+        //- // Search results will be dynamically added here
+
+    div.w3-container
+        - const today = new Date();  // Get the current date
+        if workers
+
+            - const vacationStartDate = new Date(vacationrecords.vacation_start_date);  // Get the vacation start date from the database
+            - const vacationEndDate = new Date(vacationrecords.vacation_end_date);  // Get the vacation end date from the database
+
+            - const vacationDays = vacationrecords.vacation_days_used;  // Get the quantity of vacation days from the database
+
+            - const isOnVacation = today >= vacationStartDate && today <= vacationEndDate;
+
+            if isOnVacation
+                div.w3-tag.w3-red.w3-margin.w3-round.w3-right
+                    div.w3-tag.w3-red(style="border-radius: 15px;") У відпустці
+            else
+                div.w3-tag.w3-green.w3-margin.w3-round.w3-right
+                    div.w3-tag.w3-green Працює зараз
+
+        //- div.w3-tag.w3-green.w3-margin.w3-round.w3-right
+        //-     div.w3-tag.w3-green Працює зараз
+        //- div.w3-tag.w3-red.w3-margin.w3-round.w3-right
+        //-     div.w3-tag.w3-red(style="border-radius: 15px;") У відпустці
+       
+        if worker
+            h3 #{worker.second_name} #{worker.name} #{worker.middle_name} #{worker.worker_uuid}   
+            form(action="/add-vacation" method="post")
+                input(type="hidden" name="worker_uuid" value=worker.worker_uuid) 
+        else 
+            h3 Прізвище Ім'я По-батькові ID
+        //- Outputting current date
+        div#current-date
+            | #{today.getFullYear()}
+        div#current-date= new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
+        
+        div.w3-margin Статистика, залишки, періоди
+
+        div.w3-bar.w3-black
+            button.w3-bar-item.w3-button.tablink.w3-amber(onclick="openVac(event,'Main_vac')") Основна відпустка
+            button.w3-bar-item.w3-button.tablink(onclick="openVac(event,'Extra_vac')") Додаткова відпустка
+            button.w3-bar-item.w3-button.tablink(onclick="openVac(event,'Soc_vac')") Соціальна відпустка
+            button.w3-bar-item.w3-button.tablink(onclick="openVac(event,'PC_vac')") Робота за ПК
+
+        div#w3-container.w3-padding-16
+            div#Main_vac.vacation
+                include table_main
+
+            div#Extra_vac.vacation(style="display:none")
+                p tab2
+                include table_main
+            div#Soc_vac.w3-container.w3-border.vacation(style="display:none")
+                p tab3
+                include table_main
+            div#PC_vac.w3-container.w3-border.vacation(style="display:none")
+                p tab4
+                include table_main
+
+script.
+    //JS code for modal windows
+    function openVac(event, vacName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("vacation");
+        for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablink");
+        for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" w3-amber", "");
+        }
+        document.getElementById(vacName).style.display = "block";
+        event.currentTarget.className += " w3-amber";
+ }
+script.
+    // JavaScript code to display and remove the temporary message
+    document.addEventListener('DOMContentLoaded', function() {
+      var tempMessage = document.getElementById('temp-message');
+      var isTemporary = '#{messages.isTemporary}'; // Pass the isTemporary flag from the backend
+
+      if (isTemporary) {
+        tempMessage.textContent = '#{messages.success}'; // Display the success message from the backend
+        tempMessage.style.display = 'block';
+
+        setTimeout(function() {
+          tempMessage.style.display = 'none';
+        }, 3000); // Hide the message after 5 seconds
+      }
+    });
