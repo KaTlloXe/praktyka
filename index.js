@@ -4,9 +4,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const flash = require('connect-flash');
 const session = require('express-session');
-const crypto = require('crypto');
 const mainRouter = require('./routers/main_router');
-const connection = require('./routers/db');
 
 const host = '127.0.0.1';
 const port = 8080;

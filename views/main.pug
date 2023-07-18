@@ -42,11 +42,10 @@ body
                       p
                         label(for="reason") Підстава надання:
                         br
-                        //- input#period_from(type="text" name="reason" required)
-                        label(for="numberInput") Роспорядження №   
-                        input(type="text" id="numberInput" name="numberInput")
-                        label(for="dateInput")   З дати:
-                        input(type="date" id="dateInput" name="dateInput")
+                        label(for="reason_numer") Роспорядження №   
+                        input(type="number" id="reason_numer" name="reason_numer" min="0" step="1")
+                        label(for="reason_date")   З дати:
+                        input(type="date" id="reason_date" name="reason_date" required)
                         br
                       p
                         label(for="period_from") Період з:
@@ -67,7 +66,7 @@ body
         
         div#temp-message
         form(action="/search" method="GET")
-            input.w3-bar-item.w3-input.w3-margin.input(type="text" name="query" placeholder="Введіть П.І.Б." oninput="handleSearchInput(this)")
+            input.w3-bar-item.w3-input.w3-margin.input(type="text" name="query" placeholder="Введіть П.І.Б.")
 
         
 

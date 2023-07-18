@@ -3,15 +3,22 @@ const router = express.Router();
 const connection = require('./db');
 const crypto = require('crypto');
 const bodyParser = require('body-parser');
-const { flash } = require('express-flash-message');
+const session = require('express-session');
+const flash = require('connect-flash');
 
-router.use(flash());
 router.use(bodyParser.urlencoded({ extended: true }));
 
+router.use(session({
+  secret: 'your_secret_key',
+  resave: true,
+  saveUninitialized: true
+}));
+router.use(flash());
+
 function flashMessage(req, type, message, isTemporary, isError) {
-  req.flash(type, message);
-  req.flash('isTemporary', isTemporary);
-  req.flash('isError', isError);
+    req.flash(type, message);
+    req.flash('isTemporary', isTemporary);
+    req.flash('isError', isError);
 }
 
 router.get('/', (req, res) => {
@@ -37,7 +44,9 @@ router.post('/add-user', (req, res) => {
 });
 
 router.post('/add-vacation', (req, res) => {
-  const { worker_uuid, year_vac, type_vac, reason, period_from, period_to, quantity } = req.body;
+  const { worker_uuid, year_vac, type_vac, reason_numer, reason_date, period_from, period_to, quantity } = req.body;
+
+  const reason = `Роспорядження № ${reason_numer}, з дати: ${reason_date}`;
 
   const query = 'INSERT INTO vacation_records (worker_uuid, year_vac, type_vac, reason_vac, from_vac, to_vac, days_vac) VALUES (?, ?, ?, ?, ?, ?, ?)';
   connection.query(query, [worker_uuid, year_vac, type_vac, reason, period_from, period_to, quantity], (err, result) => {
@@ -51,6 +60,7 @@ router.post('/add-vacation', (req, res) => {
     res.redirect('/');
   });
 });
+
 
 router.get('/search', (req, res) => {
   const query = req.query.query;
@@ -89,6 +99,7 @@ router.get('/search', (req, res) => {
           }
         });
       } else {
+        console.log('Працівника не знайдено');
         flashMessage(req, 'error', 'Працівника не знайдено!', true, true);
         res.redirect('/');
       }
