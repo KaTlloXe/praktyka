@@ -1,11 +1,12 @@
 const express = require('express');
-const app = express();
 const router = express.Router();
 const connection = require('./db');
 const crypto = require('crypto');
 const bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: true }));
-// const { log } = require('console');
+const { flash } = require('express-flash-message');
+
+router.use(flash());
+router.use(bodyParser.urlencoded({ extended: true }));
 
 function flashMessage(req, type, message, isTemporary, isError) {
   req.flash(type, message);
@@ -26,12 +27,10 @@ router.post('/add-user', (req, res) => {
   connection.query(query, [name, second_name, middle_name, crypto.randomUUID()], (err, result) => {
     if (err) {
       console.error('Error adding user to SQL table:', err);
-      req.flash('error', 'Не вдалося додати користувача');
-      req.flash('isTemporary', true);
+      flashMessage(req, 'error', 'Не вдалося додати користувача', true, true);
     } else {
       console.log('User added to SQL table successfully');
-      req.flash('success', 'Користувача додано успішно!');
-      req.flash('isTemporary', true);
+      flashMessage(req, 'success', 'Користувача додано успішно!', true, false);
     }
     res.redirect('/');
   });
@@ -44,62 +43,56 @@ router.post('/add-vacation', (req, res) => {
   connection.query(query, [worker_uuid, year_vac, type_vac, reason, period_from, period_to, quantity], (err, result) => {
     if (err) {
       console.error('Error adding vacation record to SQL table:', err);
-      req.flash('error', 'Не вдалося додати запис відпустки');
+      flashMessage(req, 'error', 'Не вдалося додати запис відпустки', true, true);
     } else {
       console.log('Vacation record added to SQL table successfully');
-      req.flash('success', 'Запис відпустки додано успішно!');
-      req.flash('isTemporary', true);
+      flashMessage(req, 'success', 'Запис відпустки додано успішно!', true, false);
     }
     res.redirect('/');
   });
 });
 
 router.get('/search', (req, res) => {
-    const query = req.query.query;
-    const searchQuery = `
-      SELECT * FROM workers
-      WHERE second_name LIKE '%${query}%'
-      OR name LIKE '%${query}%'
-      OR middle_name LIKE '%${query}%'
-    `;
-connection.query(searchQuery, (err, workers) => {
+  const query = req.query.query;
+  const searchQuery = `
+    SELECT * FROM workers
+    WHERE second_name LIKE '%${query}%'
+    OR name LIKE '%${query}%'
+    OR middle_name LIKE '%${query}%'
+  `;
+
+  connection.query(searchQuery, (err, workers) => {
     if (err) {
       console.error('Error searching for workers:', err);
-      req.flash('error', 'Error searching for workers');
-      req.flash('isTemporary', true);
+      flashMessage(req, 'error', 'Error searching for workers', true, true);
       res.redirect('/');
     } else {
-        if (workers.length > 0) {
-            const worker = workers[0];
-            const vacationQuery = `
-              SELECT worker_uuid, year_vac, type_vac, reason_vac, from_vac, to_vac, days_vac
-              FROM vacation_records
-            `;
+      if (workers.length > 0) {
+        const worker = workers[0];
+        const vacationQuery = `
+          SELECT worker_uuid, year_vac, type_vac, reason_vac, from_vac, to_vac, days_vac
+          FROM vacation_records
+        `;
 
-            connection.query(vacationQuery, (err, vacationData) => {
-              if (err) {
-                console.error('Error retrieving vacation data:', err);
-                req.flash('error', 'Error retrieving vacation data');
-                req.flash('isTemporary', true);
-              } else {
-                res.render('main', {
-                  worker,
-                  vacationData,
-                  successMessage: `Found worker: ${worker.second_name} ${worker.name} ${worker.middle_name}`
-                });
-                console.log(`Found worker:${worker.second_name} ${worker.name} ${worker.middle_name}`);
-                req.flash('success', 'Працівника знайдено!');
-                req.flash('isTemporary', true);
-              }
-            });
+        connection.query(vacationQuery, (err, vacationData) => {
+          if (err) {
+            console.error('Error retrieving vacation data:', err);
+            flashMessage(req, 'error', 'Error retrieving vacation data', true, true);
           } else {
-            flashMessage(req, 'error', 'Працівника не знайдено!', true, true);
-            // req.flash('error', 'Працівника не знайдено!');
-            // req.flash('isTemporary', true);
-            // req.flash('isError', true);
-            res.redirect('/');
+            res.render('main', {
+              worker,
+              vacationData,
+              successMessage: `Found worker: ${worker.second_name} ${worker.name} ${worker.middle_name}`
+            });
+            console.log(`Found worker: ${worker.second_name} ${worker.name} ${worker.middle_name}`);
+            flashMessage(req, 'success', 'Працівника знайдено!', true, false);
           }
-        }
+        });
+      } else {
+        flashMessage(req, 'error', 'Працівника не знайдено!', true, true);
+        res.redirect('/');
+      }
+    }
   });
 });
 
