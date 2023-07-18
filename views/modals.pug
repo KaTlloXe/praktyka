@@ -20,45 +20,5 @@ div#id01.w3-modal
         p
           button.w3-button.w3-black(type="submit") Додати користувача
 
-div#id02.w3-modal
-  div.w3-modal-content
-    header.w3-container.w3-teal
-        span.w3-button.w3-display-topright(onclick="document.getElementById('id01').style.display='none'") &times;
-        h2 Додати відпустку
-    div.w3-container
-      span.w3-button.w3-display-topright(onclick="document.getElementById('id02').style.display='none'") &times;
-      form(action="/add-vacation" method="post")
-        p
-          label(for="year_vac") Рік відпустки:
-          br
-          select#year_vac(name="year_vac" required)
-            - const currentYear = new Date().getFullYear()
-            - const years = [currentYear, currentYear - 1, currentYear - 2]
-            each year in years
-              option(value=year)= year
-        p
-          label(for="type_vac") Тип відпустки:
-          br
-          select#type_vac(name="type_vac" required)
-            option(value="main_vacation") Основна відпустка
-            option(value="extra_vacation") Додаткова відпустка
-            option(value="social_vacation") Соціальна відпустка
-            option(value="pc_vacation") Робота за ПК
-        p
-          label(for="reason") Підстава надання:
-          br
-          input#reason(type="text" name="reason" required)
-        p
-          label(for="period_from") Період з:
-          br
-          input#period_from(type="date" name="period_from" required)
-        p
-          label(for="period_to") Період по:
-          br
-          input#period_to(type="date" name="period_to" required)
-        p
-          label(for="quantity") Кількість днів:
-          br
-          input#quantity(type="number" name="quantity" min="0" value="0" required)
-        p
-          button.w3-button.w3-black(type="submit") Додати відпустку
+
+

@@ -7,6 +7,12 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 // const { log } = require('console');
 
+function flashMessage(req, type, message, isTemporary, isError) {
+  req.flash(type, message);
+  req.flash('isTemporary', isTemporary);
+  req.flash('isError', isError);
+}
+
 router.get('/', (req, res) => {
   res.render('main', {
     title: 'main_page'
@@ -32,9 +38,7 @@ router.post('/add-user', (req, res) => {
 });
 
 router.post('/add-vacation', (req, res) => {
-  const { year_vac, type_vac, reason, period_from, period_to, quantity } = req.body;
-  const worker_uuid = req.body.worker_uuid;
-  console.log('Received worker_uuid:', worker_uuid);
+  const { worker_uuid, year_vac, type_vac, reason, period_from, period_to, quantity } = req.body;
 
   const query = 'INSERT INTO vacation_records (worker_uuid, year_vac, type_vac, reason_vac, from_vac, to_vac, days_vac) VALUES (?, ?, ?, ?, ?, ?, ?)';
   connection.query(query, [worker_uuid, year_vac, type_vac, reason, period_from, period_to, quantity], (err, result) => {
@@ -89,8 +93,10 @@ connection.query(searchQuery, (err, workers) => {
               }
             });
           } else {
-            req.flash('error', 'Worker not found');
-            req.flash('isTemporary', true);
+            flashMessage(req, 'error', 'Працівника не знайдено!', true, true);
+            // req.flash('error', 'Працівника не знайдено!');
+            // req.flash('isTemporary', true);
+            // req.flash('isError', true);
             res.redirect('/');
           }
         }

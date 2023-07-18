@@ -9,7 +9,7 @@ const mainRouter = require('./routers/main_router');
 const connection = require('./routers/db');
 
 const host = '127.0.0.1';
-const port = 8000;
+const port = 8080;
 
 app.use(express.static('css'));
 app.set('views', path.join(__dirname, './views'));
