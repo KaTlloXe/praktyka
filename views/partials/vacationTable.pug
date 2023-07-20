@@ -1,0 +1,26 @@
+mixin renderVacationTable(yearData, year)
+  if yearData
+    //- Sort the vacation records by 'from_vac' date in descending order
+    - const sortedVacationRecords = yearData.sort((a, b) => new Date(b.from_vac) - new Date(a.from_vac))
+    h4 Year: #{year}
+    //- Display the sorted vacation records in a table
+    div.w3-responsive.w3-hoverable
+      table.w3-table-all.w3-centered.w3-striped
+        thead
+          tr
+            th Type of Vacation
+            th Reason
+            th From Date
+            th To Date
+            th Number of Days
+        tbody
+          each record in sortedVacationRecords
+            tr
+              td #{record.type_vac}
+              td #{record.reason_vac}
+              td #{new Date(record.from_vac).toLocaleDateString()} 
+              td #{new Date(record.to_vac).toLocaleDateString()} 
+              td #{record.days_vac}
+  else
+    p Немає даних про основну відпустку для року #{year}
+

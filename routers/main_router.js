@@ -5,6 +5,8 @@ const crypto = require('crypto');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const flash = require('connect-flash');
+const { log } = require('console');
+const { AsyncLocalStorage } = require('async_hooks');
 
 router.use(bodyParser.urlencoded({ extended: true }));
 
@@ -61,7 +63,6 @@ router.post('/add-vacation', (req, res) => {
   });
 });
 
-
 router.get('/search', (req, res) => {
   const query = req.query.query;
   const searchQuery = `
@@ -85,7 +86,7 @@ router.get('/search', (req, res) => {
           SELECT worker_uuid, year_vac, type_vac, reason_vac, from_vac, to_vac, days_vac
           FROM vacation_records
           WHERE worker_uuid = ? AND year_vac IN (${lastThreeYears.join(',')})
-          ORDER BY !from_vac DESC
+          ORDER BY year_vac DESC, type_vac ASC, !from_vac DESC
         `;
 
         connection.query(getVacationRecordsQuery, [workerUUID], (err, records) => {
@@ -95,24 +96,17 @@ router.get('/search', (req, res) => {
           } else {
             const vacationData = {};
 
-            // Parse the records and group them by vacation type and year
+            // Parse the records and group them by vacation year and type
             records.forEach(record => {
               const year = record.year_vac;
               const type = record.type_vac;
               if (!vacationData[year]) vacationData[year] = {};
               if (!vacationData[year][type]) vacationData[year][type] = [];
               vacationData[year][type].push(record);
-            });
-            // const vacation_Rec = records.map((record) => JSON.parse(JSON.stringify(record)));
-            console.log(vacationData);
-            const sortedVacationData = Object.fromEntries(
-              Object.entries(vacationData).sort((a, b) => b[0] - a[0])
-            );
-            // const parsedData = JSON.parse(jsonData); // Перетворення на об'єкт JavaScript
-            // Pass the JSON data to the view
+            }); 
             res.render('main', {
               worker,
-              vacationData: sortedVacationData,
+              vacationData,
               successMessage: `Found worker: ${worker.second_name} ${worker.name} ${worker.middle_name}`
             });
             console.log(`Found worker: ${worker.second_name} ${worker.name} ${worker.middle_name}`);
@@ -127,7 +121,6 @@ router.get('/search', (req, res) => {
     }
   });
 });
-
 function getSearchCondition(query) {
   const searchTerms = query.trim().split(' ');
 
