@@ -1,79 +1,71 @@
-h3 Основна відпустка, період роботи
-div.w3-responsive.w3-hoverable.w3-border
-    table.w3-table-all.w3-centered.w3-striped.w3-border
-        tr
-        th
-        each val in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-            th В-а #{val}
-        tr
-        th Підстава надання 
-        each _ in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-            td 50
-        tr
-        th Період з
-        each _ in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-            td 94
-        tr
-        th Період по
-        each _ in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-            td 67
-        tr
-        th Кількість днів
-        each _ in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-            td 67
+//- h3 Основна відпустка, період роботи
+//- h3 #{vacationType} 2023
+//- - if (vacationData.length > 0)
+//-   div.w3-responsive.w3-hoverable.w3-border
+//-     table.w3-table-all.w3-centered.w3-striped.w3-border
+//-       thead
+//-         tr
+//-           th
+//-           th(colspan="15") Номер відпустки
+//-         tr
+//-           th
+//-             each val in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+//-               th Відп. #{val}
+//-       tbody
+//-         each workerUUID, records in vacationData
+//-           each record, index in records
+//-             tr
+//-               - if (index === 0)
+//-                 th(rowspan=`${records.length}`)= workerUUID
+//-               td= record.reason_vac
+//-               td= record.from_vac
+//-               td= record.to_vac
+//-               td= record.days_vac
+//- - else
+//-   p No vacation data available.
+//- div.w3-responsive.w3-hoverable.w3-border
+//-     table.w3-table-all.w3-centered.w3-striped.w3-border
+//-         tr
+//-         th
+//-         each val in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+//-             th В-а #{val}
+//-         tr
+//-         th Підстава надання 
+//-         each _ in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+//-             td 50
+//-         tr
+//-         th Період з
+//-         each _ in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+//-             td 94
+//-         tr
+//-         th Період по
+//-         each _ in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+//-             td 67
+//-         tr
+//-         th Кількість днів
+//-         each _ in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+//-             td 67
 h3 Залишок на 2022
-div.w3-responsive.w3-hoverable.w3-border
+if vacationData > 0
+    div.w3-responsive.w3-hoverable.w3-border
     table.w3-table-all.w3-centered.w3-striped.w3-border
         thead
-            tr
-              th
-              th(colspan="15") Номер відпустки
-            tr
-              th
-              each val in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        tr
+            th
+            th(colspan="15") Номер відпустки
+        tr
+            th
+            each val in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
                 th Відп. #{val}
         tbody
-            each val in ['Підстава', 'Період з', 'Період по', 'Кількість днів']
-              tr
-                th #{val}
-                each num in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-                  - let value = `Test ${val} ${num}`
-                  td= value
-                  
-h3 Залишок на 2021
-div.w3-responsive.w3-hoverable.w3-border
-    table.w3-table-all.w3-centered.w3-striped.w3-border
-        //- thead
-        //-    tr
-        //-      th
-        //-      th(colspan="15") Number of Vacation
-        //-    tr
-        //-      th
-        //-      each val in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-        //-        th Vacation #{val}
-        //- tbody
-        //-    each val in ['Reason', 'Period From', 'Period To', 'Quantity']
-        //-      tr
-        //-        th #{val}
-        //-        each num in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-        //-          - let vacation = vacations.find(v => v.vacation_number === num)
-        //-          - let value = vacation ? vacation[val.toLowerCase()] : 0
-        //-          td= value
-if vacationrecord > 0
-    h3 Vacation Details:
-    table
-        thead
-        tr
-            th Reason
-            th Period From
-            th Period To
-            th Quantity (Days Spent)
-        tbody
-        each vacation in vacationrecord
-            tr
-            td #{vacation.reason}
-            td #{vacation.period_from}
-            td #{vacation.period_to}
-            td #{vacation.quantity}
+        each workerUUID, records in vacationData
+            each record in records
+                tr
+                    if loop.first
+                    th(rowspan=`${records.length}`)= workerUUID
+                    td= record.reason_vac
+                    td= record.from_vac
+                    td= record.to_vac
+                    td= record.days_vac
 else
     p No vacation data available.

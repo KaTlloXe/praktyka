@@ -1,15 +1,17 @@
 html(lang="uk")
 head 
-    title Журнал відпусток
-    link(rel='icon', type='image/x-icon', href='checkbox_icon_151467.ico')
+    title 
+    link(rel='icon', type='image/x-icon', href='./favicon.ico')
     meta(charset="utf-8")
     link(rel="stylesheet", href="w3.css")
     link(rel="stylesheet", href="style.css")
     script(src="jquery.js")
+    script. 
+        cons Data = !{jsonData};
+        console.log(Data);
     style.
 body
     div.w3-bar.w3-amber.w3-large
-        //- button.w3-bar-item.w3-button.w3-hover-red.w3-padding-24.a-font Новий рік
         button.w3-bar-item.w3-button.w3-hover-blue.w3-padding-24.a-font(onclick="document.getElementById('id01').style.display='block'") Новий користувач
         if worker 
             button.w3-bar-item.w3-button.w3-hover-green.w3-padding-24.a-font(onclick="document.getElementById('id02').style.display='block'") Додати відпустку
@@ -102,25 +104,109 @@ body
         
         div.w3-margin Статистика, залишки, періоди
 
+        //- //- Helper function to generate tables
+        //- mixin generateVacationTables(vacationData)
+        //-     each yearData, year in vacationData
+        //-         div(class="tabcontent", id=`${year}_vac`)
+        //-         each vacationType, records in yearData
+        //-             div.vacation(style="display:none")
+        //-             if records.length > 0
+        //-                 h3= `${vacationType} відпустка ${year}`
+        //-                 include table_template.pug
+        //-                 +generateTable({ year, vacationType, vacationData: records })
+        //-             else
+        //-                 p= `Немає даних про ${vacationType.toLowerCase()} відпустку для року ${year}`
+
         div.w3-bar.w3-black
             button.w3-bar-item.w3-button.tablink.w3-amber(onclick="openVac(event,'Main_vac')") Основна відпустка
             button.w3-bar-item.w3-button.tablink(onclick="openVac(event,'Extra_vac')") Додаткова відпустка
             button.w3-bar-item.w3-button.tablink(onclick="openVac(event,'Soc_vac')") Соціальна відпустка
             button.w3-bar-item.w3-button.tablink(onclick="openVac(event,'PC_vac')") Робота за ПК
 
-        div#w3-container.w3-padding-16
-            div#Main_vac.vacation
-                include table_main
+        //- div#w3-container.w3-padding-16
+        //-     //- Main Vacation Tab
+        //-     div#w3-container.w3-padding-16
+        //-         //- Helper function to generate tables for a specific year and vacation type
+        //-         mixin generateVacationTable(year, vacationType, records)
+        //-             if records && records.length > 0
+        //-                 h3= `${vacationType} відпустка ${year}`
+        //-                 include table_template.pug
+        //-                 +generateTable({ year, vacationType, vacationData: records })
+        //-             else
+        //-                 p= `Немає даних про ${vacationType.toLowerCase()} відпустку для року ${year}`
 
-            div#Extra_vac.vacation(style="display:none")
-                p tab2
-                include table_main
-            div#Soc_vac.w3-container.w3-border.vacation(style="display:none")
-                p tab3
-                include table_main
-            div#PC_vac.w3-container.w3-border.vacation(style="display:none")
-                p tab4
-                include table_main
+        
+        //- //- Main Vacation Tab
+        //- div#w3-container.w3-padding-16
+        div#Main_vac.vacation
+                //- дані мають виводитись сюди
+                if vacationData
+                    each yearData, yearIndex in vacationData
+                            h4 Year: #{yearIndex}
+                            div.w3-responsive.w3-hoverable.w3-border
+                                table.w3-table-all.w3-centered.w3-striped.w3-border
+                                    thead
+                                        tr
+                                            th Type of Vacation
+                                            th Reason
+                                            th From Date
+                                            th To Date
+                                            th Number of Days
+                                    tbody
+                                        //- Loop through the vacation records for the current year
+                                        each typeData, typeIndex in yearData
+                                            each record in typeData
+                                                tr
+                                                    td #{record.type_vac}
+                                                    td #{record.reason_vac}
+                                                    td #{record.from_vac}
+                                                    td #{record.to_vac}
+                                                    td #{record.days_vac}
+                else 
+                    p даних Немає
+
+        //-     each year in ['2023', '2022', '2021']
+        //-         include table_template.pug
+        //-         +generateVacationTable(year, 'main_vacation', vacationData[year].main_vacation[0])
+
+        //-     //- For Extra Vacation
+        //-     div#Extra_vac.vacation(style="display:none")
+        //-         each year, index in [2023, 2022, 2021]
+        //-             - const extraVacationData = vacationData?.[year]?.Extra || []
+        //-             if extraVacationData.length > 0
+        //-                 h3 Додаткова відпустка #{year}
+        //-                 include table_template.pug
+        //-                 +generateTable({ year, vacationType: 'Extra', vacationData: extraVacationData })
+        //-             else
+        //-                 p Немає даних про додаткову відпустку для року #{year}
+
+        //-     //- For Social Vacation
+        //-     div#Soc_vac.w3-container.w3-border.vacation(style="display:none")
+        //-         each year, index in [2023, 2022, 2021]
+        //-             - const socialVacationData = vacationData?.[year]?.Social || []
+        //-             if socialVacationData.length > 0
+        //-                 h3 Соціальна відпустка #{year}
+        //-                 include table_template.pug
+        //-                 +generateTable({ year, vacationType: 'Social', vacationData: socialVacationData })
+        //-             else
+        //-                 p Немає даних про соціальну відпустку для року #{year}
+
+        //-     //- For PC Vacation
+        //-     div#PC_vac.w3-container.w3-border.vacation(style="display:none")
+        //-         each year, index in [2023, 2022, 2021]
+        //-             - const pcVacationData = vacationData?.[year]?.PC || []
+        //-             if pcVacationData.length > 0
+        //-                 h3 PC-відпустка #{year}
+        //-                 include table_template.pug
+        //-                 +generateTable({ year, vacationType: 'PC', vacationData: pcVacationData })
+        //-             else
+        //-                 p Немає даних про PC-відпустку для року #{year}
+
+    
+
+
+
+
 
 script.
     //JS code for modal windows
@@ -137,6 +223,7 @@ script.
         document.getElementById(vacName).style.display = "block";
         event.currentTarget.className += " w3-amber";
  }
+
 script.
     // JavaScript code to display and remove the temporary message
     document.addEventListener('DOMContentLoaded', function() {
@@ -160,17 +247,33 @@ script.
         }
     });
 
+//- script.
+//-     document.getElementById('myForm').addEventListener('submit', function(e) {
+//-         e.preventDefault();
+
+//-         var numberValue = document.getElementById('numberInput').value;
+//-         var dateValue = document.getElementById('dateInput').value;
+
+//-         var pugString = 'Роспорядження № ' + numberValue + ' З дати: ' + dateValue;
+
+//-         // Використовуйте pugString, якщо вам потрібно його подальше використання
+
+//-         // Приклад виведення рядка Pug на консоль
+//-         console.log(pugString);
+//-     });
 script.
-    document.getElementById('myForm').addEventListener('submit', function(e) {
-        e.preventDefault();
+    // Js code for calculatin the quantity of vacation days 
+    $(document).ready(function() {
+    // Event listener for the period_from and period_to fields
+    $('#period_from, #period_to').on('change', function() {
+      const start_date = new Date($('#period_from').val());
+      const end_date = new Date($('#period_to').val());
 
-        var numberValue = document.getElementById('numberInput').value;
-        var dateValue = document.getElementById('dateInput').value;
+      // Calculate the difference in days
+      const diff_in_time = end_date.getTime() - start_date.getTime();
+      const diff_in_days = diff_in_time / (1000 * 3600 * 24);
 
-        var pugString = 'Роспорядження № ' + numberValue + ' З дати: ' + dateValue;
-
-        // Використовуйте pugString, якщо вам потрібно його подальше використання
-
-        // Приклад виведення рядка Pug на консоль
-        console.log(pugString);
+      // Update the quantity field
+      $('#quantity').val(diff_in_days);
     });
+  });

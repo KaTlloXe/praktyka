@@ -66,9 +66,7 @@ router.get('/search', (req, res) => {
   const query = req.query.query;
   const searchQuery = `
     SELECT * FROM workers
-    WHERE second_name LIKE '%${query}%'
-    OR name LIKE '%${query}%'
-    OR middle_name LIKE '%${query}%'
+    WHERE ${getSearchCondition(query)}
   `;
 
   connection.query(searchQuery, (err, workers) => {
@@ -79,19 +77,42 @@ router.get('/search', (req, res) => {
     } else {
       if (workers.length > 0) {
         const worker = workers[0];
-        const vacationQuery = `
+        const workerUUID = worker.worker_uuid;
+        const currentYear = new Date().getFullYear();
+        const lastThreeYears = [currentYear, currentYear - 1, currentYear - 2];
+
+        const getVacationRecordsQuery = `
           SELECT worker_uuid, year_vac, type_vac, reason_vac, from_vac, to_vac, days_vac
           FROM vacation_records
+          WHERE worker_uuid = ? AND year_vac IN (${lastThreeYears.join(',')})
+          ORDER BY !from_vac DESC
         `;
 
-        connection.query(vacationQuery, (err, vacationData) => {
+        connection.query(getVacationRecordsQuery, [workerUUID], (err, records) => {
           if (err) {
             console.error('Error retrieving vacation data:', err);
             flashMessage(req, 'error', 'Error retrieving vacation data', true, true);
           } else {
+            const vacationData = {};
+
+            // Parse the records and group them by vacation type and year
+            records.forEach(record => {
+              const year = record.year_vac;
+              const type = record.type_vac;
+              if (!vacationData[year]) vacationData[year] = {};
+              if (!vacationData[year][type]) vacationData[year][type] = [];
+              vacationData[year][type].push(record);
+            });
+            // const vacation_Rec = records.map((record) => JSON.parse(JSON.stringify(record)));
+            console.log(vacationData);
+            const sortedVacationData = Object.fromEntries(
+              Object.entries(vacationData).sort((a, b) => b[0] - a[0])
+            );
+            // const parsedData = JSON.parse(jsonData); // Перетворення на об'єкт JavaScript
+            // Pass the JSON data to the view
             res.render('main', {
               worker,
-              vacationData,
+              vacationData: sortedVacationData,
               successMessage: `Found worker: ${worker.second_name} ${worker.name} ${worker.middle_name}`
             });
             console.log(`Found worker: ${worker.second_name} ${worker.name} ${worker.middle_name}`);
@@ -106,5 +127,19 @@ router.get('/search', (req, res) => {
     }
   });
 });
+
+function getSearchCondition(query) {
+  const searchTerms = query.trim().split(' ');
+
+  if (searchTerms.length === 1) {
+    return `second_name LIKE '%${searchTerms[0]}%'`;
+  } else if (searchTerms.length === 2) {
+    return `second_name LIKE '%${searchTerms[0]}%' AND name LIKE '%${searchTerms[1]}%'`;
+  } else if (searchTerms.length === 3) {
+    return `second_name LIKE '%${searchTerms[0]}%' AND name LIKE '%${searchTerms[1]}%' AND middle_name LIKE '%${searchTerms[2]}%'`;
+  } else {
+    return '';
+  }
+}
 
 module.exports = router;
