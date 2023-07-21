@@ -77,6 +77,7 @@ router.get('/search', (req, res) => {
       if (workers.length > 0) {
         const worker = workers[0];
         const workerUUID = worker.worker_uuid;
+        const today = new Date();
         const currentYear = new Date().getFullYear();
         const lastThreeYears = [currentYear, currentYear - 1, currentYear - 2];
 
@@ -102,9 +103,21 @@ router.get('/search', (req, res) => {
               if (!vacationData[year][type]) vacationData[year][type] = [];
               vacationData[year][type].push(record);
             }); 
+            let isOnVacation = false;
+            for (const record of records) {
+              const startDate = new Date(record.from_vac);
+              const endDate = new Date(record.to_vac);
+              
+              // Check if the current date falls within the vacation period
+              if (today >= startDate && today <= endDate) {
+                isOnVacation = true;
+                break;
+              }
+            }
             res.render('main', {
               worker,
               vacationData,
+              isOnVacation: isOnVacation,
               successMessage: `Found worker: ${worker.second_name} ${worker.name} ${worker.middle_name}`
             });
             console.log(`Found worker: ${worker.second_name} ${worker.name} ${worker.middle_name}`);

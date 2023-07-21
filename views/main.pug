@@ -21,14 +21,12 @@ body
 
     div.w3-container
         - const today = new Date();  // Get the current date
-        if workers
-            if isOnVacation
-                div.w3-tag.w3-red.w3-margin.w3-round.w3-right
-                    div.w3-tag.w3-red(style="border-radius: 15px;") У відпустці
-            
-            else 
-                div.w3-tag.w3-green.w3-margin.w3-round.w3-right
-                    div.w3-tag.w3-green Працює зараз
+        if isOnVacation
+            div.w3-tag.w3-red.w3-margin.w3-round.w3-right
+                div.w3-tag.w3-red(style="border-radius: 15px;") У відпустці
+        else
+            div.w3-tag.w3-green.w3-margin.w3-round.w3-right
+                div.w3-tag.w3-green Працює зараз
         
         if worker
             - const id = worker.worker_uuid;
