@@ -21,12 +21,13 @@ body
 
     div.w3-container
         - const today = new Date();  // Get the current date
-        if isOnVacation
-            div.w3-tag.w3-red.w3-margin.w3-round.w3-right
-                div.w3-tag.w3-red(style="border-radius: 15px;") У відпустці
-        else
-            div.w3-tag.w3-green.w3-margin.w3-round.w3-right
-                div.w3-tag.w3-green Працює зараз
+        if worker
+            if isOnVacation
+                div.w3-tag.w3-red.w3-margin.w3-round.w3-right
+                    div.w3-tag.w3-red(style="border-radius: 15px;") У відпустці
+            else
+                div.w3-tag.w3-green.w3-margin.w3-round.w3-right
+                    div.w3-tag.w3-green Працює зараз
         
         if worker
             - const id = worker.worker_uuid;
@@ -35,11 +36,11 @@ body
         else 
             h3 Прізвище Ім'я По-батькові ID
         //- Outputting current date
-        div#current-date
-            | #{today.getFullYear()}
-        div#current-date= new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
+        //- div#current-date
+        //-     | #{today.getFullYear()}
+        //- div#current-date= new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
         
-        div.w3-margin Статистика, залишки, періоди
+        //- div.w3-margin Статистика, залишки, періоди
 
         div.w3-bar.w3-black
             button.w3-bar-item.w3-button.tablink.w3-amber(onclick="openVac(event,'Main_vac')") Основна відпустка
