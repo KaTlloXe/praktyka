@@ -69,7 +69,7 @@ body
                 p Немає даних про відпустки
 
         //- For Social Vacation
-        div#Soc_vac.w3-container.w3-border.vacation(style="display:none")
+        div#Soc_vac.vacation(style="display:none")
             if worker
                 each year in lastThreeYears
                     - const yearData = vacationData && vacationData[year] && vacationData[year]['social_vacation'];
@@ -78,7 +78,7 @@ body
                 p Немає даних про відпустки
 
         //- For PC Vacation
-        div#PC_vac.w3-container.w3-border.vacation(style="display:none")
+        div#PC_vac.vacation(style="display:none")
             if worker
                 each year in lastThreeYears
                     - const yearData = vacationData && vacationData[year] && vacationData[year]['pc_vacation'];
