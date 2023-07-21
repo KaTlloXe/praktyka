@@ -1,26 +1,37 @@
 mixin renderVacationTable(yearData, year)
   if yearData
-    //- Sort the vacation records by 'from_vac' date in descending order
-    - const sortedVacationRecords = yearData.sort((a, b) => new Date(b.from_vac) - new Date(a.from_vac))
-    h4 Year: #{year}
-    //- Display the sorted vacation records in a table
+    - const sortedVacationRecords = yearData.sort((a, b) => new Date(a.from_vac) - new Date(b.from_vac))
+    h4 Рік: #{year}
+    //- Get the unique types of vacations for the current year
+    - const vacationTypes = Array.from(new Set(sortedVacationRecords.map(record => record.type_vac)))
+
     div.w3-responsive.w3-hoverable
       table.w3-table-all.w3-centered.w3-striped
         thead
           tr
-            th Type of Vacation
-            th Reason
-            th From Date
-            th To Date
-            th Number of Days
+            th
+            th(colspan=(sortedVacationRecords.length)) Номер відпустки
+          tr
+            th 
+            each record, index in sortedVacationRecords
+              th Відпустка № #{index + 1}
         tbody
-          each record in sortedVacationRecords
+          each type in vacationTypes
             tr
-              td #{record.type_vac}
-              td #{record.reason_vac}
-              td #{new Date(record.from_vac).toLocaleDateString()} 
-              td #{new Date(record.to_vac).toLocaleDateString()} 
-              td #{record.days_vac}
+              th Підстава надання
+              each record in sortedVacationRecords.filter(record => record.type_vac === type)
+                td #{record.reason_vac}
+            tr
+              th Період з
+              each record in sortedVacationRecords.filter(record => record.type_vac === type)
+                td #{new Date(record.from_vac).toLocaleDateString()}
+            tr
+              th Період по
+              each record in sortedVacationRecords.filter(record => record.type_vac === type)
+                td #{new Date(record.to_vac).toLocaleDateString()}
+            tr
+              th Кількість днів
+              each record in sortedVacationRecords.filter(record => record.type_vac === type)
+                td #{record.days_vac}
   else
     p Немає даних про основну відпустку для року #{year}
-

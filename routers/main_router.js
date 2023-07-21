@@ -5,8 +5,6 @@ const crypto = require('crypto');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const flash = require('connect-flash');
-const { log } = require('console');
-const { AsyncLocalStorage } = require('async_hooks');
 
 router.use(bodyParser.urlencoded({ extended: true }));
 
@@ -41,13 +39,13 @@ router.post('/add-user', (req, res) => {
       console.log('User added to SQL table successfully');
       flashMessage(req, 'success', 'Користувача додано успішно!', true, false);
     }
-    res.redirect('/');
+    res.redirect(`/search?query=${second_name}`);
   });
 });
 
 router.post('/add-vacation', (req, res) => {
   const { worker_uuid, year_vac, type_vac, reason_numer, reason_date, period_from, period_to, quantity } = req.body;
-
+  const second_name = req.body.second_name;
   const reason = `Роспорядження № ${reason_numer}, з дати: ${reason_date}`;
 
   const query = 'INSERT INTO vacation_records (worker_uuid, year_vac, type_vac, reason_vac, from_vac, to_vac, days_vac) VALUES (?, ?, ?, ?, ?, ?, ?)';
@@ -58,8 +56,8 @@ router.post('/add-vacation', (req, res) => {
     } else {
       console.log('Vacation record added to SQL table successfully');
       flashMessage(req, 'success', 'Запис відпустки додано успішно!', true, false);
+      res.redirect(`/search?query=${second_name}`);
     }
-    res.redirect('/');
   });
 });
 

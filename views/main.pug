@@ -22,14 +22,6 @@ body
     div.w3-container
         - const today = new Date();  // Get the current date
         if workers
-
-            - const vacationStartDate = new Date(vacationrecords.vacation_start_date);  // Get the vacation start date from the database
-            - const vacationEndDate = new Date(vacationrecords.vacation_end_date);  // Get the vacation end date from the database
-
-            - const vacationDays = vacationrecords.vacation_days_used;  // Get the quantity of vacation days from the database
-
-            - const isOnVacation = today >= vacationStartDate && today <= vacationEndDate;
-
             if isOnVacation
                 div.w3-tag.w3-red.w3-margin.w3-round.w3-right
                     div.w3-tag.w3-red(style="border-radius: 15px;") У відпустці
